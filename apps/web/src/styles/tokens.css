@@ -1,0 +1,106 @@
+/**
+ * TRIE SPACE — the committed world.
+ *
+ * Ground is deep ink-violet, never neutral black: the glow-free saturated
+ * pigment is what separates this from the dark-plus-neon dashboard default.
+ * One ultramarine field owns the live walk at page scale. Citron is the single
+ * high-energy signal and is spent only on proof. Dense data sits on bone
+ * plates — the inversion is what keeps 66-character hashes scannable inside an
+ * expressive frame.
+ */
+
+:root {
+  /* ---- ground ---------------------------------------------------------- */
+  --void: #0b0918;
+  --void-lift: #120e26;
+  --void-edge: #201a44;
+  --field: #1a1440;
+
+  /* ---- the committed field --------------------------------------------- */
+  --ultra: #2b1de8;
+  --ultra-deep: #1a1094;
+  --ultra-wash: #2b1de826;
+
+  /* ---- signal ---------------------------------------------------------- */
+  --citron: #dfff37;
+  --citron-dim: #a3bd1f;
+  --vermilion: #ff3b21;
+  --vermilion-dim: #b32410;
+  /* The rejected field is its own surface and needs its own ink, or the
+     explanatory copy that matters most sits under the contrast floor. */
+  --vermilion-field: #6a1407;
+  --ink-on-vermilion: #ffe2db;
+  --ink-on-vermilion-muted: #ffb9a9;
+  --stroke-on-vermilion: #ff8a70;
+
+  /* ---- plates ---------------------------------------------------------- */
+  --bone: #eceef4;
+  --bone-lift: #f7f8fb;
+  --bone-edge: #d3d6e4;
+
+  /* ---- ink ------------------------------------------------------------- */
+  --ink: #0b0918;
+  --ink-on-bone-muted: #575b76;
+  --ink-on-void: #f2f3f8;
+  --ink-on-void-muted: #9aa0be;
+  --ink-on-ultra: #ffffff;
+  --ink-on-ultra-muted: #c3bdff;
+
+  /* ---- type ------------------------------------------------------------ */
+  --face-display: 'Anybody Variable', 'Anybody', system-ui, sans-serif;
+  --face-ui: 'Familjen Grotesk Variable', 'Familjen Grotesk', system-ui, sans-serif;
+  --face-mono: 'Spline Sans Mono Variable', 'Spline Sans Mono', ui-monospace, monospace;
+
+  --step--2: 0.6875rem;
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.25rem;
+  --step-2: 1.75rem;
+  --step-3: 2.5rem;
+  --step-4: clamp(3rem, 6vw, 5rem);
+
+  /**
+   * The one type size that is NOT on the screen ramp, because it is not a screen
+   * size: labels inside the walk's SVG are set in the viewBox's user-space units
+   * (viewBox is 340 wide and scales to its pane, ~2.8x on a desktop console), so
+   * 9 user units renders at roughly 25 screen px. It is a documented step of the
+   * system, measured in the coordinate space it actually lives in.
+   */
+  --svg-label: 9px;
+
+  /* ---- rhythm ---------------------------------------------------------- */
+  --gap-hair: 2px;
+  --gap-1: 6px;
+  --gap-2: 10px;
+  --gap-3: 16px;
+  --gap-4: 24px;
+  --gap-5: 38px;
+  --gap-6: 60px;
+
+  /* Focus is per-surface: citron is invisible on a bone plate, and the register
+     rows are the page's primary controls. Each surface overrides this. */
+  --focus: var(--citron);
+
+  --rail-w: 60px;
+  --line: 1px solid var(--void-edge);
+  --line-bone: 1px solid var(--bone-edge);
+
+  /* ---- depth ----------------------------------------------------------- */
+  --lift-1: 0 1px 2px rgba(4, 2, 14, 0.4), 0 6px 18px -6px rgba(4, 2, 14, 0.55);
+  --lift-2: 0 2px 4px rgba(4, 2, 14, 0.45), 0 22px 48px -18px rgba(4, 2, 14, 0.7);
+
+  /* ---- motion ---------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
+  --dur-fast: 140ms;
+  --dur: 320ms;
+  --dur-slow: 720ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+}
