@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.turbo/
+*.tsbuildinfo
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# noir
+# Prover.toml IS committed: it is a reproducible fixture emitted by the circuit's
+# own emit_fixture test, so `pnpm --filter @nullius/id all` works on a clean clone.
+packages/id/circuit/target/
+packages/id/circuit/Verifier.toml
+
+# transient decision-page logs from the design tooling
+.impeccable/questions/
+.impeccable/live/
+
+# local
+.env
+.env.local
+.DS_Store
+.impeccable/live/
+radar-cache/

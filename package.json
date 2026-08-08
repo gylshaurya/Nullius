@@ -1,0 +1,23 @@
+{
+  "name": "nullius",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @nullius/web dev",
+    "build": "pnpm -r --filter=!@nullius/web build && pnpm --filter @nullius/web build",
+    "typecheck": "pnpm -r typecheck",
+    "fork": "anvil --fork-url $NULLIUS_FORK_RPC --port 8545 --chain-id 1 --steps-tracing",
+    "evil": "pnpm --filter @nullius/evil-rpc start",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
