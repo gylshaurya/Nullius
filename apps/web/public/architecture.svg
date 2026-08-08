@@ -102,7 +102,7 @@
   <text class="small" x="683" y="342">against its parent, in your</text>
   <text class="small" x="683" y="357">browser</text>
 
-  <text class="small" x="668" y="382">the only place belief is created</text>
+  <text class="small" x="668" y="382">where belief is created</text>
 
   <!-- anchor / trust boundary -->
   <rect x="642" y="470" width="238" height="94" fill="none" stroke="#c02718" stroke-dasharray="5 4"/>
@@ -111,8 +111,8 @@
   <text class="box" x="668" y="521" font-size="13">Anchored state root</text>
   <text class="small" x="668" y="538">corroborated across endpoints</text>
 
-  <path d="M761 470 V366" fill="none" stroke="#8ea300" stroke-dasharray="4 3" marker-end="url(#ag)" stroke-width="1.5"/>
-  <text class="small" x="770" y="424" fill="#6b6f80">compared against</text>
+  <path d="M838 470 V366" fill="none" stroke="#8ea300" stroke-dasharray="4 3" marker-end="url(#ag)" stroke-width="1.5"/>
+  <text class="small" x="690" y="446" fill="#6b6f80">compared against</text>
 
   <text class="note" x="40" y="626">Everything above the dashed box is verified. The box itself is the one thing still trusted, and the app names it permanently on screen.</text>
 

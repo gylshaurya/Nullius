@@ -8,6 +8,8 @@ Nullius asks for a cryptographic proof instead and checks it in your browser. Wh
 
 Ethereum has supported this since 2018. Almost nobody uses it.
 
+**Live: [gylshaurya.github.io/Nullius](https://gylshaurya.github.io/Nullius/)**. The first screen verifies a real mainnet account in your browser, and [this link](https://gylshaurya.github.io/Nullius/?show=rejected) shows a forged proof being rejected at the node where it broke.
+
 ---
 
 ## The architecture
@@ -100,6 +102,8 @@ Note what it cannot do: produce a proof that verifies while carrying a false bal
 ---
 
 ## Running it
+
+The deployed build differs from a local run in two ways, and says so on screen in both places rather than papering over them. A static host has nowhere to run a separate dishonest server, so the tampering happens in the client instead; the data is still real mainnet data and the rejection is still a real verification failure, only the place the forgery is injected moves. And relay APIs send no CORS headers, so a browser can only reach them through a proxy, which a static host does not have; the deployed radar therefore shows a stored snapshot, labelled as one. Run it locally for the real dishonest server and live relay data.
 
 Needs Node 20 or newer and pnpm.
 
