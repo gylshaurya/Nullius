@@ -14,9 +14,14 @@ contracts/broadcast/
 packages/id/circuit/target/
 packages/id/circuit/Verifier.toml
 
-# transient decision-page logs from the design tooling
-.impeccable/questions/
-.impeccable/live/
+# local tooling and working notes, not part of the project
+.impeccable/
+.codex/
+.claude/
+DEVFOLIO.md
+IDEAS.md
+PRODUCT.md
+DESIGN.md
 
 # local
 .env

@@ -40,7 +40,6 @@ You can also confirm the proof is bound to its public inputs — flip a byte of
 
 ## What this does NOT prove
 
-Say this before anyone asks.
 
 - **The tree's membership rule.** Every leaf was admitted because a
   Merkle-Patricia proof of its balance verified against a real Ethereum state

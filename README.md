@@ -2,23 +2,65 @@
 
 **Your wallet has never once checked. Nullius makes it check.**
 
-Nullius is a verifying read path for Ethereum. Instead of asking a server for your balance and believing the answer, it asks for a cryptographic proof and checks that proof in your browser. When a server lies, you see it happen, and you see the exact place the lie broke.
+Nullius is a verifying read path for Ethereum. Instead of asking a server for your balance and believing the answer, it asks for a cryptographic proof and checks that proof in your browser. When a server lies, you see it happen, and you see the exact node where the lie broke.
+
+Everything a wallet shows you today arrived as a sentence from a company, with no signature and no check anywhere in the path. This closes that gap, and it does the same thing for the send path and for group membership.
+
+---
+
+## The architecture
+
+![Architecture diagram](apps/web/public/architecture.svg)
+
+The diagram compares two read paths. Here is how to read it.
+
+### The top band: what happens today
+
+Three boxes in a row, joined by dashed arrows. Your wallet asks a provider using `eth_getBalance`, the provider replies with the string `"4.2"`, and your screen displays `4.2 ETH`.
+
+The arrows are dashed on purpose. Nothing in that path carries any evidence. As the note beside it says, a truthful answer and a forged one are byte identical from your wallet's point of view, which is why no wallet has ever caught one.
+
+### The bottom band: what Nullius does instead
+
+Reading left to right:
+
+**Your wallet, unchanged.** It keeps speaking the same standard interface, EIP-1193, that viem and wagmi and ethers already speak. Nothing about the app has to be rewritten.
+
+**`nullius/provider`,** the ultramarine box. This is the piece that replaces the ordinary connection. It quietly upgrades the question from "what is the balance" to "prove the balance".
+
+**Three endpoints, fanned out.** Two independent operators and, in the demo, `evil-rpc`, outlined in red because it lies on purpose. All three are asked at the same time. The important part is why: they are asked in parallel for speed and liveness, **not** so that a vote can be held between them.
+
+**The local Merkle walk,** outlined in citron. Every returned proof lands here. Each node is hashed and checked against the reference its parent holds, in your browser, not on any server. This is the only place in the whole diagram where belief is created.
+
+**The trust boundary,** the dashed red box at the bottom. Inside it sits the anchored state root, which is the one thing still being trusted. The citron arrow running up from it into the verifier shows what every proof is compared against. Everything above that box is verified. The box itself is an assumption, and the app names it permanently on screen rather than hiding it in a footnote.
+
+**Three outcomes,** on the right:
+
+- **Proven.** The first proof that verifies wins. One honest endpoint is enough.
+- **Rejected.** A proof was offered and its chain of hashes does not reach the root. It broke at node 4 of 5, and the interface says exactly that, because naming the node is more useful than saying verification failed.
+- **Zero honest.** You get nothing, not a lie.
+
+**The strip along the bottom** lists the four modules, which are the same principle applied in four places: reads you can check, who actually includes your transaction, stake instead of identity, and agreeing without a platform.
+
+### The one sentence version
+
+Belief is created in exactly one place, on your machine, by comparing hashes against a root you obtained independently. Everything else is plumbing, and every value on screen carries a label saying which of those it is.
 
 ---
 
 ## Why you would want this
 
-**You can stop trusting the company that answers your wallet's questions.** Right now, every balance, token holding, and contract value you see arrived as a sentence from Infura or Alchemy or whichever endpoint is configured, with no signature and no check anywhere in the path. Nullius turns those into values you can verify yourself. One honest endpoint out of any number is enough.
+**You can stop trusting the company that answers your wallet's questions.** Balances, token holdings, contract code and storage slots become values you can verify yourself. One honest endpoint out of any number is enough.
 
 **You can tell when an endpoint is lying to you.** Today there is no way to know. A lying server looks identical to an honest one, because there is no error and no warning, and your wallet draws the lie in the same font as the truth. Nullius rejects proofs that do not hash to the root and names the node where each one failed.
 
 **You can find out which endpoints are actually trustworthy.** Some popular public endpoints refuse to serve proofs at all. During this build both `publicnode` and `merkle.io` either refused or throttled the request. Nullius records who serves proofs, who serves garbage, and who does not answer.
 
-**You can see whether your transaction can actually get through.** Most Ethereum validators no longer build their own blocks. Builders and relays do, and some relays filter what they will carry. Nullius reads the relays' own public feeds, counts what each one delivered over a window they can all see, and shows you the share of Ethereum's block supply flowing through relays that filter. Then it broadcasts one signed transaction across several routes at once and records which route went quiet, so silent censorship becomes something you can watch instead of something you guess at.
+**You can see whether your transaction can actually get through.** Most Ethereum validators no longer build their own blocks. Builders and relays do, and some relays filter what they will carry. Nullius reads the relays' own public feeds, counts what each one delivered over a window they can all see, and shows the share of Ethereum's block supply flowing through relays that filter. Then it broadcasts one signed transaction across several routes at once and records which route went quiet, so silent censorship becomes something you can watch instead of something you guess at.
 
 **You can prove you belong to a group without identifying yourself.** Most anti Sybil defences want a passport, a phone number, or a face scan. Nullius gates membership on proven ETH holdings, so an extra identity costs real capital instead of real privacy, and there is no registry anywhere to be leaked or captured.
 
-**You can drop it into an app you already have.** It implements EIP-1193, the standard interface every Ethereum library already speaks, so viem, wagmi and ethers can accept it without the app being rewritten.
+**You can drop it into an app you already have.** It implements EIP-1193, so existing libraries accept it without the app being rewritten.
 
 ---
 
@@ -85,46 +127,6 @@ Liveness degrades. Safety does not.
 
 ---
 
-## The architecture
-
-![Architecture diagram](apps/web/public/architecture.svg)
-
-The diagram compares two read paths. Here is how to read it.
-
-### The top band: what happens today
-
-Three boxes in a row, joined by dashed arrows. Your wallet asks a provider using `eth_getBalance`, the provider replies with the string `"4.2"`, and your screen displays `4.2 ETH`.
-
-The arrows are dashed on purpose. Nothing in that path carries any evidence. As the note beside it says, a truthful answer and a forged one are byte identical from your wallet's point of view, which is why no wallet has ever caught one.
-
-### The bottom band: what Nullius does instead
-
-Reading left to right:
-
-**Your wallet, unchanged.** It keeps speaking the same standard interface. Nothing about the app has to be rewritten.
-
-**`nullius/provider`,** the ultramarine box. This is the piece that replaces the ordinary connection. It quietly upgrades the question from "what is the balance" to "prove the balance".
-
-**Three endpoints, fanned out.** Two independent operators and, in the demo, `evil-rpc`, outlined in red because it lies on purpose. All three are asked at the same time. The important thing is why: they are asked in parallel for speed and liveness, **not** so a vote can be held between them.
-
-**The local Merkle walk,** outlined in citron. Every returned proof lands here. Each node is hashed and checked against the reference its parent holds, in your browser, not on any server. This is the only place in the whole diagram where belief is created.
-
-**The trust boundary,** the dashed red box at the bottom. Inside it sits the anchored state root, which is the one thing still being trusted. The citron arrow running up from it into the verifier shows what every proof is compared against. Everything above that box is verified. That box itself is an assumption, and the app names it permanently on screen rather than hiding it in a footnote.
-
-**Three outcomes,** on the right:
-
-- **Proven.** The first proof that verifies wins. One honest endpoint is enough.
-- **Rejected.** A proof was offered and its chain of hashes does not reach the root. It broke at node 4 of 5, and the interface says so, because naming the node is more useful than saying verification failed.
-- **Zero honest.** You get nothing, not a lie.
-
-**The strip along the bottom** lists the four modules, which are the same principle applied in four places: reads you can check, who actually includes your transaction, stake instead of identity, and agreeing without a platform.
-
-### The one sentence version
-
-Belief is created in exactly one place, on your machine, by comparing hashes against a root you obtained independently. Everything else is plumbing, and every value carries a label saying which of those it is.
-
----
-
 ## Four levels of trust
 
 Every value in the interface carries one of these. They use four drawn shapes rather than four colours, so the difference survives a black and white screenshot, because a trust level you cannot tell apart is a trust level the interface failed to communicate.
@@ -142,7 +144,7 @@ There is also a bar across the top of the app listing everything the system does
 
 ## The four modules
 
-**provider** is the verifying read path. It anchors a state root, upgrades reads into `eth_getProof`, and walks the Merkle Patricia path locally. It refuses endpoints that answer for the wrong chain, and it chooses the anchor block as the highest block at least two independent endpoints claim to have, so no single endpoint can pick our root by misreporting its height.
+**provider** is the verifying read path. It anchors a state root, upgrades reads into `eth_getProof`, and walks the Merkle Patricia path locally. It refuses endpoints that answer for the wrong chain, and it chooses the anchor block as the highest block at least two independent endpoints claim to have, so no single endpoint can pick the root by misreporting its height.
 
 **route** is the censorship radar and the flight recorder. It measures relay behaviour from the relays' own public feeds and multicasts one signed transaction across several routes so you can see which one went silent.
 
@@ -150,7 +152,7 @@ There is also a bar across the top of the app listing everything the system does
 
 **quorum** is group signalling gated on proven holdings rather than identity.
 
-**evil-rpc** is a deliberately dishonest endpoint, shipped as a first class part of the project rather than as a test fixture. It reports balances a hundred times too large and corrupts one node of every account proof. The argument this project makes is untestable until you can point at a liar and watch it get caught, so we ship the liar.
+**evil-rpc** is a deliberately dishonest endpoint, shipped as a first class part of the project rather than as a test fixture. It reports balances a hundred times too large and corrupts one node of every account proof. The argument this project makes is untestable until you can point at a liar and watch it get caught, so the liar ships with it.
 
 Note what it cannot do. It cannot produce a proof that verifies while carrying a false balance, because that would mean breaking keccak256. That asymmetry is the entire idea.
 
@@ -159,7 +161,7 @@ Note what it cannot do. It cannot produce a proof that verifies while carrying a
 ## Repository layout
 
 ```
-packages/types      the frozen interface contract, everything codes against this
+packages/types      the shared interface contract, everything codes against this
 packages/provider   state root anchoring, eth_getProof, and the Merkle verifier
 packages/route      censorship radar, multicast sender, flight recorder
 packages/id         the Noir circuit and its proving scripts
@@ -206,7 +208,7 @@ The negative tests are the interesting ones. One shows a path to a root nobody c
 
 ## What we do not prove
 
-This is the most useful section here, and all of it is on screen in the app too.
+All of this is on screen in the app too, not just here.
 
 **The anchor.** The root comes from a header corroborated across independent endpoints, not from a verified sync committee signature. That is a larger assumption than running a light client, not a smaller one, because these are third parties. It is the biggest thing being trusted.
 
@@ -216,13 +218,13 @@ This is the most useful section here, and all of it is on screen in the app too.
 
 **Transaction inclusion.** The flight recorder's inclusion is reported rather than proven. Proving it means rebuilding the block's transaction tree locally and checking its root against the header.
 
-**Censorship intent.** We measure behaviour. "This relay has not included this kind of transaction" is a measurement. Why it did that is an inference, and we do not present inference as data.
+**Censorship intent.** Behaviour is measured. "This relay has not included this kind of transaction" is a measurement. Why it did that is an inference, and inference is not presented as data.
 
 **Personhood.** The id module proves capital, not humanity. It raises the cost per identity rather than capping identities, which is the right trade for some uses and the wrong one for others.
 
-**Zero knowledge membership in the app.** The quorum's gate is proven, because every member's balance was demonstrated against the same root. Its anonymity is not proven inside the app: the circuit exists and verifies, but it proves through the command line rather than in your browser, and the set it proves membership of is a snapshot rather than the live state tree.
+**Zero knowledge membership in the app.** The quorum's gate is proven, because every member's balance was demonstrated against the same root. Its anonymity is not proven inside the app: the circuit exists and verifies, but it proves through the command line rather than in the browser, and the set it proves membership of is a snapshot rather than the live state tree.
 
-**Collusion resistance.** We have anonymity, which is a different property. Anonymity from the public does not stop someone voluntarily showing a briber how they voted. Stopping that needs receipt freeness, which needs the ability to secretly replace your key. That is MACI's contribution, and we cite it rather than claiming to have rebuilt it.
+**Collusion resistance.** There is anonymity, which is a different property. Anonymity from the public does not stop someone voluntarily showing a briber how they voted. Stopping that needs receipt freeness, which needs the ability to secretly replace your key. That is MACI's contribution, cited rather than rebuilt.
 
 ---
 
@@ -232,23 +234,12 @@ The circuit proves through the command line rather than in the browser. Wiring i
 
 The web bundle is a single chunk of roughly one megabyte, with no code splitting.
 
-Two bloXroute relay feeds fail from some networks. Their rows render with their errors rather than being hidden, because an empty table would read as "nothing is happening", which is a claim we have not earned.
+Two bloXroute relay feeds fail from some networks. Their rows render with their errors rather than being hidden, because an empty table would read as "nothing is happening", which is a claim that has not been earned.
 
-Measuring inclusion delay properly needs first seen timestamps per transaction across a longer window than one session collects, which is why that column states it cannot be derived rather than showing a number we could not defend.
-
----
-
-## Other documents
-
-| File | What is in it |
-|---|---|
-| `EXPLAINER.md` | the whole system in plain words, with a glossary and the hard questions answered |
-| `DEVFOLIO.md` | the submission content |
-| `IDEAS.md` | the strategy, the alternatives considered, and the risk register |
-| `PRODUCT.md` | durable product truth |
-| `DESIGN.md` | the visual system, recorded from the built code |
-| `packages/id/README.md` | what the circuit proves and what it does not |
+Measuring inclusion delay properly needs first seen timestamps per transaction across a longer window than one session collects, which is why that column states it cannot be derived rather than showing a number that could not be defended.
 
 ---
+
+`EXPLAINER.md` has the whole system in plain words, with a glossary and the common questions answered. `packages/id/README.md` covers what the circuit proves and what it does not.
 
 *The name is from* nullius in verba, *Latin for "take nobody's word for it", the motto the Royal Society adopted in 1660.*

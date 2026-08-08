@@ -1,8 +1,8 @@
-# NULLIUS — the whole thing, in plain words
+# Nullius, in plain words
 
-This document exists so you can understand the project deeply enough to explain it to a technical judge without notes, and to answer the hard follow-up questions. No jargon is used without being explained first.
+This document explains the whole system from the ground up. No jargon is used without being explained first.
 
-Read sections 1–4 to understand the idea. Read 5–8 to understand each module. Read 9–12 before you talk to a judge.
+Sections 1 to 4 explain the idea. Sections 5 to 8 explain each module. Sections 9 to 11 cover the limits, the common questions, and a glossary.
 
 ---
 
@@ -76,11 +76,9 @@ It needs one starting point: a recent block hash you accept as real, called a **
 
 ---
 
-## 4. The argument that makes this project win
+## 4. Don't vote, verify
 
-One of the three hackathon tracks suggests building a "decentralized RPC aggregator" that distributes requests across providers and "implements consensus mechanisms among providers."
-
-**We think that's the wrong answer, and being able to say why is the core of our submission.**
+The obvious way to distrust one RPC provider is to ask five and take the majority. We think that is the wrong answer, and this section is why. It is the design decision the whole project rests on.
 
 Polling five providers and taking the majority answer is a **vote**. Votes have three problems here:
 
@@ -103,7 +101,7 @@ That last row is the whole thing. With proofs you need exactly **one** honest pr
 
 That distinction has a name worth using out loud: **liveness degrades, safety doesn't.** Refusing to show a number is a worse user experience than showing one. Showing a false number is a worse *outcome*. We choose the worse experience every time, and we say so in the interface.
 
-**"Don't vote — verify."** That's the sentence. If a judge remembers one thing, it should be that one.
+**Don't vote, verify.** That is the entire argument in three words.
 
 ---
 
@@ -134,7 +132,7 @@ There's a standard interface, **EIP-1193**, that every Ethereum app expects. Eve
 | **ATTESTED-BY-N** | N providers agreed. Not proof. Just agreement. |
 | **UNVERIFIABLE** | One source, no proof available. This is a claim. |
 
-If a competing project shows a number without telling you which of these three it is, it is showing you a claim dressed as a fact. **Being explicit about what we can't prove is the most credible thing in the submission.** A judge who knows this space will trust the PROVEN label precisely *because* we didn't slap it on everything.
+Any interface that shows a number without telling you which of these it is, is showing you a claim dressed as a fact. Being explicit about what we can't prove is what makes the PROVEN label worth anything: it means something precisely because it isn't applied to everything.
 
 **The demo:** we ship a deliberately malicious RPC server called `evil-rpc`. It's a transparent proxy that passes everything through untouched except one thing: it multiplies reported balances by 100.
 
@@ -213,7 +211,7 @@ An on-chain verifier contract checks the proof. The block is anchored either by 
 
 **What you get:** a gate where every extra identity costs an attacker real capital, no user reveals anything, and nothing needs a central registry, an orb, or a government.
 
-**The honest caveats — say these before a judge finds them:**
+**The honest caveats:**
 
 - **It's proof of holdings, not proof of personhood.** A whale can make many identities. It raises the cost per identity; it doesn't cap identities. That's a real and correct trade for many use cases, and a wrong one for others.
 - **This is the hardest part of the build.** Verifying a Merkle-Patricia path requires computing keccak256 hashes *inside* the circuit, and keccak is notoriously expensive in ZK. If in-browser proving time is unacceptable, we ship a documented fallback: a Poseidon-hash Merkle tree of qualifying holders, built from proofs we verified, with its root published. Proving becomes trivial. The cost is that membership is a **snapshot** rather than proven live — and if we ship that, we say so plainly rather than letting anyone assume otherwise.
@@ -224,7 +222,7 @@ An on-chain verifier contract checks the proof. The block is anchored either by 
 
 **The problem: letting a group agree on something, with no platform in the middle, no way to buy the outcome, and no need for anyone to expose themselves.**
 
-Three properties, and they're separate. Conflating them is the most common mistake in this area — and knowing that they're separate is a credibility marker with judges.
+Three properties, and they are separate. Conflating them is the most common mistake in this area.
 
 **Property one: no platform.** Group membership and results live in a contract. There's no server that could go down, get pressured, or quietly alter a tally.
 
@@ -244,59 +242,26 @@ The fix is **receipt-freeness**: make it impossible to prove how you voted, even
 
 MACI is a heavy integration for a 12-hour build. So we're direct about it: we ship Semaphore + RLN, implement the key-switching primitive minimally to demonstrate the mechanism, and **cite MACI as prior art rather than claiming to have solved collusion**.
 
-Saying "we have anonymity, and here is precisely why that isn't collusion resistance, and here's the design that is" earns more from a judge who knows this field than an overclaim ever could — and the overclaim would be caught.
+Stating precisely why anonymity is not collusion resistance, and naming the design that is, is worth more than an overclaim that would not survive scrutiny.
 
 ---
 
 ## 9. What we do NOT prove
 
-Put this section in the README and say it out loud. It is the most credible part of the pitch, and it's *especially* credible coming right after a demo that just caught a server lying.
+A system that catches a server lying only earns belief if it is equally precise about its own limits. All of this is on screen in the app, not only here.
 
-- **The weak subjectivity checkpoint.** The light client needs one starting block hash it accepts as real. Every Ethereum client makes this assumption; ours is no different, and we don't hide it.
+- **The anchor.** The root comes from a block header corroborated across independent endpoints, not from a verified sync-committee signature. That is a *larger* assumption than running a light client, not a smaller one, because these are third parties. It is the biggest thing being trusted. Full light-client sync is the next step.
 - **`eth_call` in the general case.** Implemented verifiably for one path to prove the technique. The rest is labelled UNVERIFIABLE — not quietly labelled PROVEN.
 - **Gas estimation and log filters.** Same category. Marked, not hidden.
 - **Censorship *intent*.** We measure behaviour. "This relay has never included this kind of transaction" is a measurement. *Why* is an inference, and we don't dress inference as data.
 - **Personhood.** `nullius/id` proves capital, not humanity. Distinct things.
-- **Collusion resistance.** We ship anonymity. See section 8.
-- **Light-client sync against the demo fork.** Our demo runs against a local fork of real mainnet state — real data, deterministic, works if the venue wifi dies. But you can't run a real sync committee against a fork, so in that mode the sync step is simulated. Real state, simulated sync. We say which is which.
+- **Zero-knowledge membership in the app.** The quorum's gate is proven, because every member's balance was demonstrated against the same root. Its anonymity is not proven *inside the app*: the Noir circuit exists and verifies, but it proves through the command line rather than in the browser, and the set it proves membership of is a snapshot rather than the live state trie.
+- **Collusion resistance.** We have anonymity, which is a different property. See section 8.
+- **Transaction inclusion.** The flight recorder's inclusion is reported, not proven. Proving it means rebuilding the block's transaction trie locally and checking its root against the header.
 
 ---
 
-## 10. Explaining it to a judge
-
-### The 20-second version
-
-> "Your wallet shows you a balance because a company told it that number. There's no proof anywhere in that path. NULLIUS asks for a Merkle proof instead and checks it against a state root from a light client running in your browser. If the server lies, we catch it. Here — watch."
-
-Then run the demo. Don't explain further first; the demo explains better than you do.
-
-### The 60-second version
-
-> "Ethereum's state root is in every block header, and it's a fingerprint of every account at once. `eth_getProof` has let any node prove an account's contents against it since 2018. Almost no wallet uses it — every balance you've ever seen in a wallet is an unverified claim from a server.
->
-> NULLIUS is an EIP-1193 provider that refuses to believe anything it can't check. Light client in the browser for the state root, `eth_getProof` for the value, local Merkle-Patricia walk to verify.
->
-> The track brief asked for provider voting. We think that's the wrong primitive — voting needs a majority honest and gives an attacker a budget, while a proof needs exactly one honest provider and fails closed at zero. So we built proofs, and we can tell you why.
->
-> Same principle applied to sending: we measure which relays actually include transactions, route across the ones that do, and hand you a flight recorder with an inclusion proof. And to identity: prove you hold ETH in zero knowledge, get Sybil resistance that costs capital instead of privacy.
->
-> Everything in the UI is labelled PROVEN, ATTESTED, or UNVERIFIABLE. We'd rather show you nothing than show you a lie."
-
-### The demo order — and why
-
-1. **`evil-rpc`.** The lie, caught. Do this first, always. It makes every later claim credible because the audience has just watched the system catch something.
-2. **The Radar and Flight Recorder.** Real relay data, a real route, a real inclusion proof. This is the "you actually built something that measures the world" beat.
-3. **The anonymous stake-gated signal.** Prove holdings in ZK, join, signal. The chain learns a nullifier and nothing else.
-
-### Track framing — the same repo, three doors
-
-- **Censorship Resistance:** lead with the argument against provider voting, then the Radar and routing. Position it against FOCIL: this is the client-side layer that exists *now*, before forced inclusion lists ship.
-- **Self-Sovereignty:** lead with "your smart account is only as sovereign as the RPC that tells it what state it's in." Then the ZK holdings proof — sovereignty over your identity, not just your keys. If the account-abstraction thread comes up, the honest framing is that ERC-4337 and **EIP-8141** ("Frame Transaction", Draft, targeted at Bogota) are the contract-level and protocol-level answers to the same problem — and that both of them still read their state over an unverified channel, which is the gap we close. Whichever way account abstraction lands, the read path underneath it is ours.
-- **Decentralized Coordination Layers:** lead with `quorum`. The point of difference: every other coordination tool's Sybil defence is either a central registry or a vibe. Ours is cryptographic and capital-based, and it reveals nothing.
-
----
-
-## 11. Hard questions, with answers
+## 10. Common questions
 
 **"How do you get the state root without trusting someone?"**
 Sync committee signatures over beacon headers, verified locally. 512 validators rotating every ~27 hours, aggregate BLS signature, cheap enough for a browser. One trust assumption: the weak subjectivity checkpoint. We state it rather than hide it.
@@ -324,7 +289,7 @@ None of the primitives. All of the assembly. EIP-1186 is from 2018, light client
 
 ---
 
-## 12. Glossary
+## 11. Glossary
 
 | Term | Plain meaning |
 |---|---|
@@ -356,11 +321,3 @@ None of the primitives. All of the assembly. EIP-1186 is from 2018, light client
 | **Anvil fork** | A local chain seeded from real mainnet state. Real data, deterministic, offline-safe. |
 
 ---
-
-## 13. The five sentences to memorise
-
-1. Every number in your wallet is an unverified claim from a company, and there is no cryptography in that path.
-2. Ethereum's state root is a fingerprint of every account, it's in every block header, and `eth_getProof` has let anyone prove against it since 2018.
-3. Don't vote — verify: voting needs a majority honest and prices the attack, a proof needs one honest source and fails closed at zero.
-4. Everything on screen is PROVEN, ATTESTED, or UNVERIFIABLE, because a system that won't tell you which is just a nicer-looking claim.
-5. We'd rather show you nothing than show you a lie.
