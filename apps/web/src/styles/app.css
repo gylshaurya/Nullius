@@ -1,0 +1,1146 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--void);
+  color: var(--ink-on-void);
+  font-family: var(--face-ui);
+  font-size: var(--step-0);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--citron);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.mono {
+  font-family: var(--face-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Console frame
+   ========================================================================== */
+
+.console {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-areas:
+    'head rail'
+    'admitted rail'
+    'stage rail';
+  grid-template-columns: minmax(0, 1fr) var(--rail-w);
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.ground {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- masthead ----------------------------------------------------------- */
+
+.masthead {
+  grid-area: head;
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-4);
+  padding: var(--gap-3) var(--gap-4) var(--gap-3);
+  border-bottom: var(--line);
+}
+
+.wordmark {
+  font-family: var(--face-display);
+  font-size: var(--step-2);
+  font-weight: 800;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0;
+  color: var(--ink-on-void);
+}
+
+.motto {
+  font-size: var(--step--1);
+  font-style: italic;
+  color: var(--ink-on-void-muted);
+  margin: 0;
+}
+
+.masthead__anchor {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-3);
+  font-size: var(--step--2);
+  color: var(--ink-on-void-muted);
+}
+
+.masthead__anchor strong {
+  color: var(--citron);
+  font-weight: 500;
+}
+
+/* ---- admitted assumptions ---------------------------------------------- */
+
+.admitted {
+  grid-area: admitted;
+  min-width: 0;
+}
+
+.admitted-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-1) var(--gap-2);
+  padding: var(--gap-2) var(--gap-4);
+  border-bottom: var(--line);
+  background: var(--void-lift);
+}
+
+.admitted-bar__lede {
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-on-void-muted);
+  margin-right: var(--gap-2);
+  align-self: center;
+}
+
+.admitted-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-1);
+  padding: 3px 8px 3px 6px;
+  font-size: var(--step--2);
+  color: var(--ink-on-void);
+  border: 1px solid var(--void-edge);
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 3px,
+    rgba(154, 160, 190, 0.16) 3px 4px
+  );
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.admitted-chip:hover,
+.admitted-chip[aria-expanded='true'] {
+  border-color: var(--ink-on-void-muted);
+}
+
+.admitted-chip[data-dormant='true'] {
+  opacity: 0.45;
+}
+
+/* The act's claim, on screen rather than in a title attribute. */
+.act-claim {
+  padding: var(--gap-2) var(--gap-4);
+  margin: 0;
+  border-bottom: var(--line);
+  background: var(--void-lift);
+  font-size: var(--step--1);
+  line-height: 1.55;
+  max-width: 96ch;
+  color: var(--ink-on-void);
+}
+
+.act-claim strong {
+  color: var(--citron);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: var(--step--2);
+  margin-right: var(--gap-2);
+}
+
+.admitted-note {
+  grid-column: 1 / -1;
+  max-width: 68ch;
+  margin: var(--gap-2) 0 var(--gap-1);
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--ink-on-void-muted);
+}
+
+/* ==========================================================================
+   Stage
+   ========================================================================== */
+
+.stage {
+  grid-area: stage;
+  display: grid;
+  grid-template-areas:
+    'register walk'
+    'radar lower';
+  grid-template-columns: minmax(340px, 33%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 1px;
+  background: var(--void-edge);
+  min-height: 0;
+}
+
+.region {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.region--plate {
+  background: var(--bone);
+  color: var(--ink);
+  --focus: var(--ultra);
+}
+
+.region--field {
+  background: var(--ultra);
+  color: var(--ink-on-ultra);
+}
+
+.region--void {
+  background: var(--void-lift);
+}
+
+.region__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-2);
+  padding: var(--gap-3) var(--gap-3) var(--gap-2);
+  flex: none;
+}
+
+.region__title {
+  margin: 0;
+  font-family: var(--face-display);
+  font-size: var(--step-1);
+  font-weight: 700;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.region__note {
+  margin: 0;
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.region--plate .region__note {
+  color: var(--ink-on-bone-muted);
+}
+
+.region--field .region__note {
+  color: var(--ink-on-ultra-muted);
+}
+
+.region__body {
+  flex: 1;
+  min-height: 0;
+  /* Flex items default to min-width:auto, which lets the radar table's
+     min-content width propagate up and widen the whole page. */
+  min-width: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.region--register {
+  grid-area: register;
+}
+.region--walk {
+  grid-area: walk;
+}
+.region--radar {
+  grid-area: radar;
+}
+.region--lower {
+  grid-area: lower;
+}
+
+/* ==========================================================================
+   Register
+   ========================================================================== */
+
+.register {
+  display: flex;
+  flex-direction: column;
+}
+
+.reading {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--gap-2);
+  padding: var(--gap-2) var(--gap-3);
+  border-top: var(--line-bone);
+  text-align: left;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.reading:hover {
+  background: var(--bone-lift);
+}
+
+.reading[aria-current='true'] {
+  background: var(--bone-lift);
+  box-shadow: inset 2px 0 0 var(--ultra);
+}
+
+.reading__mark {
+  grid-row: span 2;
+  align-self: center;
+}
+
+.reading__label {
+  font-size: var(--step--1);
+  color: var(--ink-on-bone-muted);
+}
+
+.reading__value {
+  grid-column: 2;
+  font-family: var(--face-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--step-1);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  word-break: break-all;
+}
+
+.reject-strip {
+  margin: 0;
+  padding: var(--gap-2) var(--gap-3);
+  background: var(--vermilion-field);
+  color: var(--ink-on-vermilion);
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+.reject-strip strong {
+  display: block;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-on-vermilion-muted);
+}
+
+/* The forged figure, shown beside the proven one while a rejected proof is up. */
+.reading__forged {
+  grid-column: 2 / -1;
+  font-size: var(--step-1);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--vermilion-dim);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  word-break: break-all;
+}
+
+.reading__forged-src {
+  /* inline-block so the strike-through does not carry into the label */
+  display: inline-block;
+  margin-left: var(--gap-2);
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.reading__rubric {
+  grid-column: 2 / -1;
+  font-size: var(--step--2);
+  line-height: 1.5;
+  color: var(--ink-on-bone-muted);
+}
+
+.reading__trust {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: var(--step--2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reading--rejected .reading__value {
+  color: var(--vermilion-dim);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.reading--rejected .reading__trust {
+  color: var(--vermilion-dim);
+}
+
+.reading--proven .reading__trust {
+  color: var(--ultra);
+}
+
+.reading--attested .reading__trust,
+.reading--unverifiable .reading__trust {
+  color: var(--ink-on-bone-muted);
+}
+
+.reading--unverifiable .reading__value {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 4px,
+    rgba(87, 91, 118, 0.2) 4px 5px
+  );
+}
+
+.provenance {
+  padding: var(--gap-2) var(--gap-3) var(--gap-3);
+  border-top: var(--line-bone);
+  font-size: var(--step--2);
+  line-height: 1.6;
+  color: var(--ink-on-bone-muted);
+}
+
+.provenance dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px var(--gap-2);
+  margin: 0;
+}
+
+.provenance dt {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.provenance dd {
+  margin: 0;
+  font-family: var(--face-mono);
+  color: var(--ink);
+  /* `break-all` split method names mid-token (eth_getBalanc / e), which reads as
+     corruption in a panel whose whole job is exact values. */
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* ==========================================================================
+   The walk
+   ========================================================================== */
+
+/* The walk must fit its pane: a proof whose closing leaf is below a scroll edge
+   has not demonstrated that it closed. The SVG scales to the height it is
+   given rather than growing past it. */
+.region--walk .region__body {
+  display: flex;
+  /* auto, not hidden: a pathologically deep walk scrolls rather than clipping
+     its own closing leaf. */
+  overflow: auto;
+}
+
+.walk {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 var(--gap-3) var(--gap-3);
+}
+
+.walk__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-3);
+  padding: 0 var(--gap-3) var(--gap-2);
+  font-size: var(--step--2);
+  color: var(--ink-on-ultra-muted);
+}
+
+.walk__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-1);
+}
+
+/* The scale is capped, not fitted. At full pane width a 9-node walk renders
+   taller than the pane once the verdict line is accounted for, so the diagram is
+   held at a scale where the deepest realistic walk still fits — and because the
+   cap is a constant, every walk shares it. The side gutters are the price of two
+   states that stay comparable. */
+.walk__svg {
+  display: block;
+  flex: none;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.walk__empty {
+  padding: var(--gap-4) var(--gap-3);
+  max-width: 52ch;
+  font-size: var(--step--1);
+  line-height: 1.65;
+  color: var(--ink-on-ultra-muted);
+}
+
+.node-hash {
+  font-family: var(--face-mono);
+  font-size: var(--svg-label);
+  letter-spacing: -0.02em;
+  fill: var(--ink-on-ultra-muted);
+}
+
+.node-depth {
+  font-family: var(--face-mono);
+  font-size: var(--svg-label);
+  fill: var(--ink-on-ultra-muted);
+}
+
+.slot-tick {
+  fill: rgba(255, 255, 255, 0.22);
+}
+
+.slot-tick--taken {
+  fill: var(--citron);
+}
+
+/* A tick on a forged path must not wear the colour reserved for proof. */
+.slot-tick--broken {
+  fill: var(--stroke-on-vermilion);
+}
+
+.walk__path {
+  fill: none;
+  stroke: var(--citron);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.walk__path--broken {
+  stroke: var(--vermilion);
+}
+
+.walk__row-rule {
+  stroke: rgba(255, 255, 255, 0.13);
+  stroke-width: 1;
+}
+
+.walk__row-rule--active {
+  stroke: rgba(223, 255, 55, 0.4);
+}
+
+.walk__break {
+  stroke: var(--vermilion);
+  stroke-width: 1.5;
+}
+
+@keyframes draw-in {
+  from {
+    stroke-dashoffset: var(--len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.walk__path[data-animate='true'] {
+  stroke-dasharray: var(--len);
+  animation: draw-in var(--dur-slow) var(--ease-out) forwards;
+}
+
+@keyframes node-land {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.slot-tick--taken[data-animate='true'] {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: node-land var(--dur) var(--ease-snap) backwards;
+}
+
+/* the one authored moment: a contradiction crosses the field once */
+@keyframes contradiction {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}
+
+.region--walk[data-verdict='REJECTED'] {
+  background: var(--vermilion-field);
+  color: var(--ink-on-vermilion);
+  --focus: var(--ink-on-vermilion);
+}
+
+.region--walk[data-verdict='REJECTED'] .region__note,
+.region--walk[data-verdict='REJECTED'] .walk__legend,
+.region--walk[data-verdict='REJECTED'] .walk__empty {
+  color: var(--ink-on-vermilion-muted);
+}
+
+.region--walk[data-verdict='REJECTED'] .node-hash,
+.region--walk[data-verdict='REJECTED'] .node-depth {
+  fill: var(--ink-on-vermilion-muted);
+}
+
+.region--walk[data-verdict='REJECTED'] .walk__path--broken,
+.region--walk[data-verdict='REJECTED'] .walk__break {
+  stroke: var(--stroke-on-vermilion);
+}
+
+.region--walk[data-verdict='REJECTED'] .walk__row-rule,
+.region--walk[data-verdict='REJECTED'] .walk__row-rule--active {
+  stroke: rgba(255, 226, 219, 0.22);
+}
+
+/* Taken and not-taken were near-identical values on the oxblood field, which
+   erased the 16-way slot reading that carries the thesis. Not-taken drops well
+   back; taken goes to near-white — separation without borrowing citron, which
+   belongs to proof. */
+.region--walk[data-verdict='REJECTED'] .slot-tick {
+  fill: rgba(255, 226, 219, 0.11);
+}
+
+.region--walk[data-verdict='REJECTED'] .slot-tick--broken {
+  fill: var(--ink-on-vermilion);
+}
+
+.region--walk[data-verdict='REJECTED'] .action {
+  border-color: var(--ink-on-vermilion);
+  color: var(--ink-on-vermilion);
+}
+
+.region--walk[data-verdict='REJECTED'] .action:hover:not(:disabled) {
+  background: var(--ink-on-vermilion);
+  color: var(--vermilion-field);
+}
+
+.region--walk[data-verdict='REJECTED']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 138, 112, 0.45),
+    transparent
+  );
+  /* Uses the motion token so the reduced-motion override actually reaches it. */
+  animation: contradiction var(--dur-slow) var(--ease-out) 1;
+  pointer-events: none;
+}
+
+.region--walk {
+  position: relative;
+  transition: background var(--dur) var(--ease-out);
+}
+
+/* ==========================================================================
+   Radar
+   ========================================================================== */
+
+.radar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.radar-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bone);
+  text-align: left;
+  font-weight: 500;
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-on-bone-muted);
+  padding: var(--gap-1) var(--gap-3);
+  border-bottom: var(--line-bone);
+  white-space: nowrap;
+}
+
+.radar-table td {
+  padding: var(--gap-1) var(--gap-3);
+  border-bottom: var(--line-bone);
+  vertical-align: baseline;
+}
+
+.radar-table td.num {
+  font-family: var(--face-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: -0.02em;
+}
+
+/* Posture is already stated in words in its own column; a coloured stripe on
+   top of it is decoration. The row is distinguished by that word alone. */
+
+.posture {
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.posture--filtering {
+  color: var(--vermilion-dim);
+}
+.posture--unfiltered {
+  color: var(--ink-on-bone-muted);
+}
+.posture--unknown {
+  color: var(--ink-on-bone-muted);
+  opacity: 0.7;
+}
+
+.share-bar {
+  display: block;
+  height: 4px;
+  background: var(--ultra);
+  min-width: 1px;
+}
+
+.radar-row--error td {
+  color: var(--ink-on-bone-muted);
+  font-style: italic;
+}
+
+.radar__summary {
+  padding: var(--gap-2) var(--gap-3);
+  border-top: var(--line-bone);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--ink-on-bone-muted);
+}
+
+.radar__summary strong {
+  font-family: var(--face-mono);
+  font-size: var(--step-1);
+  color: var(--vermilion-dim);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Lower region — recorder + quorum
+   ========================================================================== */
+
+.lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1px;
+  background: var(--void-edge);
+  height: 100%;
+  min-height: 0;
+}
+
+.sub {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--void-lift);
+  overflow: hidden;
+}
+
+.sub__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-2);
+  padding: var(--gap-2) var(--gap-3);
+  flex: none;
+}
+
+.sub__title {
+  margin: 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.sub__body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  padding: 0 var(--gap-3) var(--gap-3);
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--ink-on-void-muted);
+}
+
+.receipt {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: var(--gap-1) 0;
+  border-top: var(--line);
+}
+
+.receipt__label {
+  color: var(--ink-on-void);
+}
+
+.receipt__time {
+  font-family: var(--face-mono);
+  font-size: var(--step--2);
+  color: var(--ink-on-void-muted);
+}
+
+.receipt--silent .receipt__label {
+  color: var(--vermilion);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  /* Also used on anchors on the pitch surface, where the default underline
+     fights the bordered control it sits inside. */
+  text-decoration: none;
+  padding: 7px 13px;
+  border: 1px solid var(--citron);
+  color: var(--citron);
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.action:hover:not(:disabled) {
+  background: var(--citron);
+  color: var(--ink);
+}
+
+.action--quiet {
+  border-color: var(--void-edge);
+  color: var(--ink-on-void);
+}
+
+.action--quiet:hover:not(:disabled) {
+  background: var(--void-edge);
+  color: var(--ink-on-void);
+}
+
+.tally {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap-2);
+  margin: var(--gap-2) 0;
+}
+
+.tally__cell {
+  border-top: 2px solid var(--void-edge);
+  padding-top: var(--gap-1);
+}
+
+.tally__cell[data-lead='true'] {
+  border-top-color: var(--citron);
+}
+
+.tally__n {
+  display: block;
+  font-family: var(--face-mono);
+  font-size: var(--step-2);
+  line-height: 1;
+  color: var(--ink-on-void);
+  font-variant-numeric: tabular-nums;
+}
+
+.tally__k {
+  font-size: var(--step--2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.caveat {
+  margin: var(--gap-2) 0 0;
+  padding-left: var(--gap-2);
+  border-left: 1px solid var(--vermilion);
+  font-size: var(--step--2);
+  line-height: 1.55;
+  color: var(--ink-on-void-muted);
+}
+
+/* ==========================================================================
+   Act rail
+   ========================================================================== */
+
+.rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-left: var(--line);
+  background: var(--void);
+}
+
+.act {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-2);
+  padding: var(--gap-3) 0;
+  border-bottom: var(--line);
+  color: var(--ink-on-void-muted);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.act:hover {
+  color: var(--ink-on-void);
+  background: var(--void-lift);
+}
+
+.act[aria-current='true'] {
+  color: var(--citron);
+  background: var(--void-lift);
+}
+
+.act[aria-current='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--citron);
+}
+
+.act__numeral {
+  font-family: var(--face-display);
+  font-size: var(--step-1);
+  font-weight: 700;
+  font-stretch: 75%;
+  letter-spacing: 0.06em;
+}
+
+.act__title {
+  writing-mode: vertical-rl;
+  font-size: var(--step--2);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.rail__foot {
+  padding: var(--gap-2) 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Marks — authored SVG trust glyphs
+   ========================================================================== */
+
+.mark {
+  display: block;
+  flex: none;
+}
+
+.mark--proven {
+  color: var(--ultra);
+}
+.mark--attested {
+  color: var(--ink-on-bone-muted);
+}
+.mark--unverifiable {
+  color: var(--ink-on-bone-muted);
+}
+.mark--rejected {
+  color: var(--vermilion);
+}
+
+.region--void .mark--proven,
+.sub .mark--proven {
+  color: var(--citron);
+}
+
+.region--void .mark--attested,
+.region--void .mark--unverifiable,
+.sub .mark--attested,
+.sub .mark--unverifiable {
+  color: var(--ink-on-void-muted);
+}
+
+/* ==========================================================================
+   Responsive — the console becomes a single scrolling column
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+  .stage {
+    grid-template-areas:
+      'register'
+      'walk'
+      'radar'
+      'lower';
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+
+  .console {
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: clip;
+    grid-template-areas:
+      'head'
+      'admitted'
+      'stage'
+      'rail';
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .region {
+    overflow: visible;
+  }
+
+  .region__body {
+    overflow: visible;
+  }
+
+  /* The radar table has a real minimum width, so it scrolls inside its own
+     region rather than forcing the page to scroll sideways. */
+  .region--radar .region__body {
+    overflow-x: auto;
+  }
+
+  /* In a single scrolling column the walk grows to its natural height instead
+     of being scaled to fit a fixed pane. */
+  .region--walk .region__body {
+    display: block;
+    overflow: visible;
+  }
+
+  .walk__svg {
+    flex: none;
+    height: auto;
+  }
+
+  .rail {
+    flex-direction: row;
+    border-left: 0;
+    border-top: var(--line);
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+
+  .act {
+    flex-direction: row;
+    border-bottom: 0;
+    border-right: var(--line);
+    padding: var(--gap-2);
+  }
+
+  .act__title {
+    writing-mode: horizontal-tb;
+  }
+
+  .act[aria-current='true']::before {
+    inset: auto 0 0 0;
+    width: auto;
+    height: 2px;
+  }
+
+  .lower {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail__foot {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .masthead {
+    flex-wrap: wrap;
+    gap: var(--gap-1) var(--gap-3);
+  }
+
+  .motto {
+    flex: 1 1 100%;
+  }
+
+  .region__head {
+    flex-wrap: wrap;
+  }
+
+  .masthead__anchor {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .reading {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+
+  .reading__trust {
+    grid-column: 2;
+    grid-row: auto;
+  }
+}
