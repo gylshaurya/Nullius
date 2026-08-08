@@ -1,0 +1,7 @@
+[package]
+name = "nullius_id"
+type = "bin"
+authors = ["nullius"]
+compiler_version = ">=1.0.0"
+
+[dependencies]

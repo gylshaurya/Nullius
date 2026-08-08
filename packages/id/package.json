@@ -1,0 +1,18 @@
+{
+  "name": "@nullius/id",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "cd circuit && nargo test",
+    "fixture": "cd circuit && nargo test --show-output emit_fixture",
+    "compile": "cd circuit && nargo compile",
+    "witness": "cd circuit && nargo execute witness",
+    "vk": "cd circuit && bb write_vk -b target/nullius_id.json -o target",
+    "prove": "cd circuit && bb prove -b target/nullius_id.json -w target/witness.gz -o target",
+    "verify": "cd circuit && bb verify -k target/vk -p target/proof -i target/public_inputs",
+    "gates": "cd circuit && bb gates -b target/nullius_id.json",
+    "all": "pnpm test && pnpm compile && pnpm witness && pnpm vk && pnpm prove && pnpm verify",
+    "typecheck": "echo 'nargo circuit — see pnpm test'"
+  }
+}

@@ -1,0 +1,14 @@
+# A valid witness for nullius/id, emitted by the circuit's own `emit_fixture`
+# test so the tree is hashed with exactly the construction the circuit verifies.
+# Regenerate with: nargo test --show-output emit_fixture
+
+# ---- private ---------------------------------------------------------------
+secret = "42"
+address_field = "7"
+siblings = ["11", "22", "33", "44"]
+index_bits = [true, false, true, false]
+
+# ---- public ----------------------------------------------------------------
+root = "0x19847468cacd0a147ae0cfa54a69cae9c7a64f053e779e6935c143b3b414b681"
+context = "999"
+nullifier = "0x2f22e9084186740ee78b148fce34340d92aaa74af0d1902a5dbbd79db5f0ed87"
