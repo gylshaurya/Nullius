@@ -13,7 +13,7 @@ import type {
   RelayObservation,
 } from '@nullius/types';
 
-import { ACTS, ENDPOINTS, GATE_WEI, MODE, SEND_RPC, WATCHED } from './config';
+import { ACTS, ENDPOINTS, GATE_WEI, MODE, RELAY_SNAPSHOT, SEND_RPC, WATCHED } from './config';
 import { TrieGround } from './components/TrieGround';
 import { Admitted } from './components/Admitted';
 import { Register, type RegisterEntry } from './components/Register';
@@ -48,6 +48,7 @@ export function App() {
       medianDelaySlots: null,
       error: null,
       observedAt: 0,
+      source: 'live' as const,
     })),
   );
   const [radarLoading, setRadarLoading] = useState(true);
@@ -114,7 +115,7 @@ export function App() {
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
-      const obs = await observeRelays({ limit: 200 });
+      const obs = await observeRelays({ limit: 200, snapshotUrl: RELAY_SNAPSHOT });
       if (cancelled) return;
       setObservations(obs);
       setRadarLoading(false);
@@ -204,7 +205,7 @@ export function App() {
         setShowRejected(true);
       } else if (id === 'route') {
         setRadarLoading(true);
-        const obs = await observeRelays({ limit: 200 });
+        const obs = await observeRelays({ limit: 200, snapshotUrl: RELAY_SNAPSHOT });
         setObservations(obs);
         setRadarLoading(false);
         await send();

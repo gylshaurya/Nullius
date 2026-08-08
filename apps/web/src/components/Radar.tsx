@@ -19,6 +19,8 @@ export function Radar({
   const ordered = [...observations].sort((a, b) => b.payloadsDelivered - a.payloadsDelivered);
   const anyData = ordered.some((o) => o.payloadsDelivered > 0);
   const slotWindow = ordered.find((o) => o.windowSlots > 0)?.windowSlots ?? 0;
+  // Stored rows must never be presented as live ones.
+  const stored = ordered.find((o) => o.source === 'snapshot');
 
   return (
     <>
@@ -89,6 +91,20 @@ export function Radar({
             has no way to see, let alone route around. Inclusion delay is not shown because
             it cannot be derived from this feed alone; measuring it needs per-transaction
             first-seen times, which is what the flight recorder collects.
+            {stored && (
+              <>
+                {' '}
+                <strong style={{ color: 'var(--vermilion-dim)', fontSize: 'var(--step--1)' }}>
+                  These rows are a stored snapshot from{' '}
+                  {new Date(stored.observedAt).toISOString().slice(0, 16).replace('T', ' ')} UTC,
+                  not a live measurement.
+                </strong>{' '}
+                Relay APIs send no CORS headers, so a browser can only reach them through a
+                proxy. This deployment has none, and showing stored numbers as live ones would
+                be exactly the unlabelled claim this project refuses. Run it locally for live
+                data.
+              </>
+            )}
           </>
         ) : (
           <>

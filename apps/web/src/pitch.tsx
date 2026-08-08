@@ -13,7 +13,9 @@ import './styles/tokens.css';
 import './styles/app.css';
 import './styles/pitch.css';
 
-import { ENDPOINTS, MODE, WATCHED } from './config';
+import { ENDPOINTS, MODE, RELAY_SNAPSHOT, WATCHED } from './config';
+
+const BASE = import.meta.env.BASE_URL;
 import { TrieGround } from './components/TrieGround';
 import { Walk } from './components/Walk';
 import { Mark } from './components/Marks';
@@ -146,7 +148,7 @@ function LiveRadar() {
 
   useEffect(() => {
     let live = true;
-    void observeRelays({ limit: 200 }).then((o) => {
+    void observeRelays({ limit: 200, snapshotUrl: RELAY_SNAPSHOT }).then((o) => {
       if (live) setObs(o);
     });
     return () => {
@@ -189,6 +191,14 @@ function LiveRadar() {
           </div>
         ))}
       </div>
+      {obs && rows.some((o) => o.source === 'snapshot') && (
+        <p style={{ marginTop: 'var(--gap-3)', color: 'var(--vermilion)' }}>
+          These rows are a stored snapshot, not a live measurement. Relay APIs send no CORS
+          headers, so a browser can only reach them through a proxy, and this deployment has
+          none. Showing stored numbers as live ones would be exactly the unlabelled claim
+          this project refuses. The verification above it is live.
+        </p>
+      )}
       {obs && rows.length > 0 && (
         <p style={{ marginTop: 'var(--gap-3)' }}>
           <strong>{(filtered * 100).toFixed(1)}%</strong> of the payloads delivered in the{' '}
@@ -237,10 +247,10 @@ function Pitch() {
               independently.
             </p>
             <div className="hero__actions">
-              <a className="action action--lead" href="/">
+              <a className="action action--lead" href={BASE}>
                 Open the console
               </a>
-              <a className="action action--quiet" href="/?show=rejected">
+              <a className="action action--quiet" href={`${BASE}?show=rejected`}>
                 Watch a server get caught
               </a>
             </div>
@@ -327,7 +337,7 @@ function Pitch() {
           </div>
           <div className="diagram">
             <img
-              src="/architecture.svg"
+              src={`${BASE}architecture.svg`}
               alt="Two read paths compared. Today: a wallet asks an RPC provider for a balance and renders the answer, with no cryptography in the path. With NULLIUS: the provider is asked for a Merkle proof, several endpoints are queried in parallel, each proof is walked locally against an independently obtained state root, and the first proof that verifies wins. A forged proof from evil-rpc breaks at a named node. A dashed boundary marks the one remaining trusted element: the anchored state root."
             />
           </div>
@@ -405,10 +415,10 @@ function Pitch() {
             We would rather show you nothing than show you a lie.
           </blockquote>
           <div className="hero__actions">
-            <a className="action action--lead" href="/">
+            <a className="action action--lead" href={BASE}>
               Open the console
             </a>
-            <a className="action action--quiet" href="/?show=rejected">
+            <a className="action action--quiet" href={`${BASE}?show=rejected`}>
               Watch a server get caught
             </a>
           </div>

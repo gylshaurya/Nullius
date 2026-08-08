@@ -29,6 +29,40 @@ export * from './mpt.js';
 
 export interface Endpoint extends ProviderRef {
   url: string;
+  /**
+   * When set, this endpoint's responses are tampered with in the client before
+   * verification, reproducing exactly what apps/evil-rpc does over the wire:
+   * balances multiplied a hundredfold, and one node of every account proof
+   * corrupted.
+   *
+   * It exists for deployments where a separate server process cannot run, such as
+   * a static host. The data is still real mainnet data and the rejection is still
+   * a real verification failure. Only the place the forgery happens moves, and
+   * the interface says which endpoint is adversarial either way.
+   */
+  tamper?: boolean;
+}
+
+/** Flip one nibble in the middle of a hex string, enough to break its hash. */
+function corruptHex(hex: Hex): Hex {
+  if (hex.length < 8) return hex;
+  const i = Math.floor(hex.length / 2);
+  const ch = hex[i] as string;
+  const next = ((parseInt(ch, 16) + 1) % 16).toString(16);
+  return `${hex.slice(0, i)}${next}${hex.slice(i + 1)}` as Hex;
+}
+
+/**
+ * Corrupt a node in the middle of the path. The root is left alone so the
+ * failure surfaces mid-walk, which is far more legible than a first-step
+ * mismatch.
+ */
+function forgeProof(nodes: readonly Hex[]): Hex[] {
+  if (nodes.length < 2) return [...nodes];
+  const out = [...nodes];
+  const target = Math.floor(out.length / 2);
+  out[target] = corruptHex(out[target] as Hex);
+  return out;
 }
 
 export interface ReaderOptions {
@@ -304,10 +338,11 @@ export class VerifyingReader {
             verified: null,
           };
         }
+        const served = proofRes.value.accountProof ?? [];
         const result = verifyAccountProof({
           stateRoot: anchor.stateRoot,
           address,
-          proof: proofRes.value.accountProof ?? [],
+          proof: endpoint.tamper ? forgeProof(served) : served,
         });
         return {
           endpoint,
@@ -432,9 +467,10 @@ export class VerifyingReader {
     return Promise.all(
       targets.map(async (endpoint) => {
         const r = await rpc<Hex>(endpoint.url, 'eth_getBalance', [address, 'latest'], this.timeout);
+        const real = r.ok && r.value ? BigInt(r.value) : null;
         return {
           provider: stripUrl(endpoint),
-          balance: r.ok && r.value ? BigInt(r.value) : null,
+          balance: real === null ? null : endpoint.tamper ? real * 100n : real,
           latencyMs: r.latencyMs,
           error: r.error,
         };

@@ -30,6 +30,9 @@ const relayProxies = Object.fromEntries(
 );
 
 export default defineConfig({
+  // A GitHub Pages project site serves from /<repo>/, so asset and link URLs
+  // need that prefix. Left as '/' for local dev and root-domain hosts.
+  base: process.env.VITE_BASE ?? '/',
   plugins: [react()],
   server: {
     proxy: relayProxies,

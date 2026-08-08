@@ -3,6 +3,9 @@ import type { Endpoint } from '@nullius/provider';
 
 const env = import.meta.env;
 
+/** Set at build time for a static deployment, where no local process can run. */
+const HOSTED = env.VITE_HOSTED === '1';
+
 /**
  * The endpoint set. `fork` is a local Anvil fork of real mainnet state; `evil`
  * is our own deliberately dishonest proxy in front of it. Both are real
@@ -33,13 +36,31 @@ export const ENDPOINTS: Endpoint[] = [
     adversarial: false,
     url: env.VITE_RPC_B ?? 'https://gateway.tenderly.co/public/mainnet',
   },
-  {
-    id: 'evil-rpc',
-    label: 'evil-rpc',
-    adversarial: true,
-    url: env.VITE_EVIL_RPC ?? 'http://127.0.0.1:8546',
-  },
+  /**
+   * The adversarial endpoint. Normally this is apps/evil-rpc, a real dishonest
+   * server on localhost. A deployed static build has nowhere to run one, so with
+   * VITE_HOSTED=1 it points at a third real operator and the tampering happens in
+   * the client instead. The data stays real and the rejection stays a real
+   * verification failure; only the place the forgery is injected moves.
+   */
+  HOSTED
+    ? {
+        id: 'evil-rpc',
+        label: 'evil-rpc (in-client)',
+        adversarial: true,
+        url: env.VITE_RPC_C ?? 'https://eth.drpc.org',
+        tamper: true,
+      }
+    : {
+        id: 'evil-rpc',
+        label: 'evil-rpc',
+        adversarial: true,
+        url: env.VITE_EVIL_RPC ?? 'http://127.0.0.1:8546',
+      },
 ];
+
+/** Where the radar falls back to when no relay API is reachable. */
+export const RELAY_SNAPSHOT = `${import.meta.env.BASE_URL}relay-snapshot.json`;
 
 export const MODE: 'fork-demo' | 'live-mainnet' =
   env.VITE_MODE === 'fork-demo' ? 'fork-demo' : 'live-mainnet';

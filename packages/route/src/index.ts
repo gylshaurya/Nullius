@@ -107,6 +107,45 @@ export interface RadarOptions {
   limit?: number;
   timeoutMs?: number;
   relays?: RelayRef[];
+  /**
+   * Where to find a stored snapshot when no relay answers. A static deployment
+   * has no proxy and the relay APIs send no CORS headers, so live measurement is
+   * impossible there. Falling back to a snapshot is honest as long as the rows
+   * say so, which is what `source` is for. Omit it and a failure stays a failure.
+   */
+  snapshotUrl?: string;
+}
+
+/** Shape of the stored snapshot written by `scripts/relay-snapshot.ts`. */
+interface RelaySnapshot {
+  capturedAt: number;
+  rows: Array<
+    Omit<RelayObservation, 'lastSeenSlot' | 'source'> & { lastSeenSlot: string | null }
+  >;
+}
+
+async function loadSnapshot(
+  url: string,
+  timeoutMs: number,
+): Promise<RelayObservation[] | null> {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctl.signal, headers: { accept: 'application/json' } });
+    if (!res.ok) return null;
+    const snap = (await res.json()) as RelaySnapshot;
+    if (!Array.isArray(snap?.rows)) return null;
+    return snap.rows.map((r) => ({
+      ...r,
+      lastSeenSlot: r.lastSeenSlot === null ? null : BigInt(r.lastSeenSlot),
+      observedAt: snap.capturedAt,
+      source: 'snapshot' as const,
+    }));
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -126,6 +165,13 @@ export async function observeRelays(opts: RadarOptions = {}): Promise<RelayObser
       return { relay, rows, error };
     }),
   );
+
+  // No relay answered at all. That is the static-deployment case rather than an
+  // Ethereum-wide outage, so try the snapshot before reporting nothing.
+  if (opts.snapshotUrl && raw.every((r) => r.rows === null)) {
+    const stored = await loadSnapshot(opts.snapshotUrl, timeoutMs);
+    if (stored) return stored;
+  }
 
   /**
    * Counting raw rows would be dishonest: every relay is asked for the same
@@ -174,6 +220,7 @@ export async function observeRelays(opts: RadarOptions = {}): Promise<RelayObser
         medianDelaySlots: null,
         error,
         observedAt,
+        source: 'live',
       };
     }
     const allSlots = rows
@@ -194,6 +241,7 @@ export async function observeRelays(opts: RadarOptions = {}): Promise<RelayObser
       medianDelaySlots: null,
       error: null,
       observedAt,
+      source: 'live',
     };
   });
 }

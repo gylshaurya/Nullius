@@ -193,6 +193,14 @@ export interface RelayObservation {
   lastSeenSlot: bigint | null;
   /** Null when the window held too few samples to say anything. */
   medianDelaySlots: number | null;
+  /**
+   * Whether this row was measured now or read from a stored snapshot. A static
+   * deployment cannot reach the relay APIs (they send no CORS headers and there
+   * is no proxy), so it falls back to a snapshot. The interface must say which,
+   * because presenting stored numbers as live ones would be the exact kind of
+   * unlabelled claim this project exists to refuse.
+   */
+  source: 'live' | 'snapshot';
   /** Set when the data API failed; the row still renders, as unattested. */
   error: string | null;
   observedAt: number;

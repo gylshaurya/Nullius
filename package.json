@@ -12,12 +12,17 @@
     "typecheck": "pnpm -r typecheck",
     "fork": "anvil --fork-url $NULLIUS_FORK_RPC --port 8545 --chain-id 1 --steps-tracing",
     "evil": "pnpm --filter @nullius/evil-rpc start",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "relay:snapshot": "tsx scripts/relay-snapshot.ts",
+    "build:pages": "VITE_BASE=/Nullius/ VITE_HOSTED=1 pnpm --filter @nullius/web build"
   },
   "devDependencies": {
+    "tsx": "^4.23.11",
     "typescript": "^5.9.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

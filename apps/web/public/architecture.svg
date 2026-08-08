@@ -1,148 +1,150 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 860" width="1240" height="860" role="img" aria-labelledby="t d">
-  <title id="t">NULLIUS architecture — where the trust goes</title>
-  <desc id="d">Two read paths compared. Today: a wallet asks an RPC provider for a balance and renders the answer, with no cryptography in the path. With NULLIUS: the provider is asked for a Merkle proof instead, several endpoints are queried in parallel, each proof is walked locally against a state root obtained independently, and the first proof that verifies wins. A forged proof from evil-rpc breaks at a nameable node. A dashed boundary marks the one thing still trusted: the anchored state root.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 700" width="1180" height="700" role="img" aria-labelledby="ttl dsc">
+  <title id="ttl">Nullius architecture: an unverified read path compared with a verified one</title>
+  <desc id="dsc">Above, the read path used today: a wallet asks a provider for a balance and displays the reply, with no evidence anywhere in the path, so a truthful answer and a forged one are indistinguishable. Below, the Nullius path: the same wallet talks to nullius/provider, which asks several independent endpoints for a Merkle proof rather than a number. Every proof is walked locally in the browser against a state root anchored separately. Proofs that reach the root are marked proven; a forged proof from the adversarial endpoint fails at a named node and is rejected; if no endpoint is honest the result is nothing rather than a false value. The anchored state root is marked as the one remaining trust assumption.</desc>
 
   <defs>
-    <marker id="a-mut" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#9aa0be"/>
+    <marker id="ar" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 1 L10 5 L0 9 z" fill="#6b6f80"/>
     </marker>
-    <marker id="a-cit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#dfff37"/>
+    <marker id="ag" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 1 L10 5 L0 9 z" fill="#1f7a4d"/>
     </marker>
-    <marker id="a-ver" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0 L10 5 L0 10 z" fill="#ff3b21"/>
+    <marker id="av" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 1 L10 5 L0 9 z" fill="#c02718"/>
     </marker>
     <style>
-      .s   { font-family: 'Familjen Grotesk Variable','Familjen Grotesk',system-ui,sans-serif; }
-      .m   { font-family: 'Spline Sans Mono Variable','Spline Sans Mono',ui-monospace,monospace; }
-      .h   { font-size: 23px; font-weight: 700; fill: #f2f3f8; letter-spacing: -0.02em; }
-      .band{ font-size: 11px; fill: #9aa0be; letter-spacing: 0.16em; }
-      .box { font-size: 14px; fill: #0b0918; }
-      .sub { font-size: 10.5px; fill: #575b76; }
-      .wire{ font-size: 11px; fill: #9aa0be; }
-      .note{ font-size: 12.5px; fill: #ffb9a9; }
-      .ok  { font-size: 12.5px; fill: #dfff37; }
-      .lab { font-size: 11px; fill: #c3bdff; letter-spacing: 0.1em; }
+      text { font-family: 'Familjen Grotesk','Helvetica Neue',Arial,sans-serif; }
+      .mono  { font-family: 'Spline Sans Mono','SFMono-Regular',Menlo,monospace; }
+      .h1    { font-size: 25px; font-weight: 700; fill: #14161c; letter-spacing: -0.02em; }
+      .sub   { font-size: 13.5px; fill: #5d6270; }
+      .strap { font-size: 11px; fill: #8a8f9c; letter-spacing: 0.15em; }
+      .box   { font-size: 14.5px; fill: #14161c; font-weight: 500; }
+      .small { font-size: 11.5px; fill: #6b6f80; }
+      .wire  { font-size: 11.5px; fill: #6b6f80; }
+      .verdict { font-size: 13px; font-weight: 600; }
+      .note  { font-size: 12.5px; fill: #5d6270; }
     </style>
   </defs>
 
-  <rect width="1240" height="860" fill="#0b0918"/>
+  <rect width="1180" height="700" fill="#f4f5f7"/>
 
-  <text class="s h" x="40" y="48">Where the trust goes</text>
-  <text class="m band" x="40" y="72">NULLIUS · READ PATH ARCHITECTURE</text>
-  <line x1="40" y1="90" x2="1200" y2="90" stroke="#201a44"/>
+  <text class="h1" x="40" y="44">Where the trust goes</text>
+  <text class="sub" x="40" y="66">Belief is created in exactly one place: your machine.</text>
 
-  <!-- ============================ TODAY ============================ -->
-  <text class="m band" x="40" y="130">TODAY — WHAT EVERY WALLET ACTUALLY DOES</text>
+  <!-- ================= TODAY ================= -->
+  <rect x="40" y="96" width="1100" height="118" fill="#ffffff" stroke="#dfe1e7"/>
+  <text class="strap" x="60" y="122">TODAY</text>
 
-  <rect x="40" y="150" width="172" height="62" fill="#eceef4"/>
-  <text class="s box" x="56" y="178">Your wallet</text>
-  <text class="s sub" x="56" y="196">viem · wagmi · ethers</text>
+  <rect x="60" y="136" width="150" height="52" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="75" y="160">Your wallet</text>
+  <text class="small" x="75" y="177">viem · wagmi</text>
 
-  <line x1="212" y1="181" x2="356" y2="181" stroke="#9aa0be" stroke-dasharray="5 4" marker-end="url(#a-mut)"/>
-  <text class="m wire" x="222" y="173">eth_getBalance</text>
+  <line x1="210" y1="162" x2="322" y2="162" stroke="#6b6f80" stroke-dasharray="4 4" marker-end="url(#ar)"/>
+  <text class="mono wire" x="218" y="155">eth_getBalance</text>
 
-  <rect x="360" y="150" width="196" height="62" fill="#eceef4"/>
-  <text class="s box" x="376" y="178">RPC provider</text>
-  <text class="s sub" x="376" y="196">a company you do not control</text>
+  <rect x="326" y="136" width="150" height="52" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="341" y="160">A company</text>
+  <text class="small" x="341" y="177">Infura · Alchemy</text>
 
-  <line x1="556" y1="181" x2="700" y2="181" stroke="#9aa0be" stroke-dasharray="5 4" marker-end="url(#a-mut)"/>
-  <text class="m wire" x="566" y="173">“4.2”</text>
+  <line x1="476" y1="162" x2="588" y2="162" stroke="#6b6f80" stroke-dasharray="4 4" marker-end="url(#ar)"/>
+  <text class="mono wire" x="500" y="155">"4.2"</text>
 
-  <rect x="704" y="150" width="172" height="62" fill="#eceef4"/>
-  <text class="s box" x="720" y="178">Your screen</text>
-  <text class="m sub" x="720" y="196">4.2 ETH</text>
+  <rect x="592" y="136" width="150" height="52" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="607" y="160">Your screen</text>
+  <text class="mono small" x="607" y="177">4.2 ETH</text>
 
-  <text class="s note" x="912" y="166">No signature. No proof. No check.</text>
-  <text class="s note" x="912" y="185">A truthful answer and a forged one are</text>
-  <text class="s note" x="912" y="204">byte-identical from here.</text>
+  <text class="note" x="782" y="152">No signature. No proof. No check.</text>
+  <text class="note" x="782" y="171">A true answer and a forged one are</text>
+  <text class="note" x="782" y="190">identical from here, so nothing catches one.</text>
 
-  <line x1="40" y1="248" x2="1200" y2="248" stroke="#201a44"/>
+  <!-- ================= NULLIUS ================= -->
+  <rect x="40" y="238" width="1100" height="356" fill="#ffffff" stroke="#dfe1e7"/>
+  <text class="strap" x="60" y="264">WITH NULLIUS</text>
 
-  <!-- =========================== NULLIUS =========================== -->
-  <text class="m band" x="40" y="288">WITH NULLIUS — THE SAME QUESTION, ASKED SO IT CAN BE CHECKED</text>
+  <rect x="60" y="286" width="132" height="52" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="74" y="310">Your wallet</text>
+  <text class="small" x="74" y="327">unchanged</text>
 
-  <rect x="40" y="330" width="150" height="62" fill="#eceef4"/>
-  <text class="s box" x="56" y="358">Your wallet</text>
-  <text class="s sub" x="56" y="376">unchanged</text>
+  <line x1="192" y1="312" x2="222" y2="312" stroke="#6b6f80" marker-end="url(#ar)"/>
 
-  <line x1="190" y1="361" x2="228" y2="361" stroke="#9aa0be" marker-end="url(#a-mut)"/>
+  <rect x="226" y="280" width="158" height="64" fill="#2b1de8"/>
+  <text class="box" x="242" y="306" fill="#ffffff">nullius/provider</text>
+  <text class="mono small" x="242" y="325" fill="#c3bdff">EIP-1193 · drop-in</text>
 
-  <rect x="232" y="330" width="190" height="62" fill="#2b1de8"/>
-  <text class="s" x="248" y="356" font-size="14" fill="#ffffff">nullius/provider</text>
-  <text class="m" x="248" y="376" font-size="10.5" fill="#c3bdff">EIP-1193 · drop-in</text>
+  <text class="mono wire" x="398" y="272">asks for a proof, not a number</text>
 
-  <!-- fan-out -->
-  <path d="M422 361 L470 361 L470 300 L516 300" fill="none" stroke="#9aa0be" marker-end="url(#a-mut)"/>
-  <path d="M422 361 L470 361 L470 380 L516 380" fill="none" stroke="#9aa0be" marker-end="url(#a-mut)"/>
-  <path d="M422 361 L470 361 L470 462 L516 462" fill="none" stroke="#ff3b21" marker-end="url(#a-ver)"/>
-  <text class="m wire" x="432" y="352">eth_getProof</text>
+  <!-- fan out -->
+  <path d="M384 312 H414 V292 H452" fill="none" stroke="#6b6f80" marker-end="url(#ar)"/>
+  <path d="M414 312 H452" fill="none" stroke="#6b6f80" marker-end="url(#ar)"/>
+  <path d="M414 312 V386 H452" fill="none" stroke="#c02718" marker-end="url(#av)"/>
 
-  <rect x="520" y="276" width="168" height="48" fill="#eceef4"/>
-  <text class="s box" x="534" y="298">endpoint A</text>
-  <text class="s sub" x="534" y="313">independent operator</text>
+  <rect x="456" y="276" width="176" height="34" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="470" y="298" font-size="13">endpoint A</text>
 
-  <rect x="520" y="356" width="168" height="48" fill="#eceef4"/>
-  <text class="s box" x="534" y="378">endpoint B</text>
-  <text class="s sub" x="534" y="393">independent operator</text>
+  <rect x="456" y="316" width="176" height="34" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="470" y="338" font-size="13">endpoint B</text>
 
-  <rect x="520" y="438" width="168" height="48" fill="#eceef4" stroke="#ff3b21" stroke-width="2"/>
-  <text class="s box" x="534" y="460">evil-rpc</text>
-  <text class="s sub" x="534" y="475">lies on purpose</text>
+  <rect x="456" y="368" width="176" height="36" fill="#fdeeec" stroke="#c02718" stroke-width="1.5"/>
+  <text class="box" x="470" y="384" font-size="13" fill="#c02718">evil-rpc</text>
+  <text class="small" x="470" y="398" fill="#c02718">forges a proof on purpose</text>
+
+  <text class="small" x="456" y="426">independent operators, asked in parallel</text>
+  <text class="small" x="456" y="442">for speed, never for a vote</text>
 
   <!-- into the verifier -->
-  <path d="M688 300 L734 300 L734 356" fill="none" stroke="#9aa0be" marker-end="url(#a-mut)"/>
-  <path d="M688 380 L734 380" fill="none" stroke="#9aa0be" marker-end="url(#a-mut)"/>
-  <path d="M688 462 L734 462 L734 404" fill="none" stroke="#ff3b21" marker-end="url(#a-ver)"/>
+  <path d="M632 293 H664 V300" fill="none" stroke="#6b6f80" marker-end="url(#ar)"/>
+  <path d="M632 333 H664 V326" fill="none" stroke="#6b6f80" marker-end="url(#ar)"/>
+  <path d="M632 386 H664 V352" fill="none" stroke="#c02718" marker-end="url(#av)"/>
 
-  <rect x="738" y="330" width="188" height="76" fill="#eceef4" stroke="#dfff37" stroke-width="2"/>
-  <text class="s box" x="754" y="356">Local MPT walk</text>
-  <text class="s sub" x="754" y="374">keccak each node · check</text>
-  <text class="s sub" x="754" y="389">against its parent · in your</text>
-  <text class="s sub" x="754" y="404">browser, not on a server</text>
+  <rect x="668" y="286" width="186" height="76" fill="#f7ffd9" stroke="#8ea300" stroke-width="1.5"/>
+  <text class="box" x="683" y="309">Merkle walk</text>
+  <text class="small" x="683" y="327">hash each node, check it</text>
+  <text class="small" x="683" y="342">against its parent, in your</text>
+  <text class="small" x="683" y="357">browser</text>
 
-  <!-- the anchor + trust boundary -->
-  <rect x="700" y="560" width="264" height="120" fill="none" stroke="#ff8a70" stroke-dasharray="6 5"/>
-  <text class="m" x="712" y="582" font-size="10.5" fill="#ff8a70" letter-spacing="0.14em">TRUST BOUNDARY</text>
-  <rect x="716" y="596" width="232" height="66" fill="#eceef4"/>
-  <text class="s box" x="730" y="620">Anchored state root</text>
-  <text class="s sub" x="730" y="637">from a light client, or corroborated</text>
-  <text class="s sub" x="730" y="652">across independent headers</text>
-  <path d="M832 560 L832 410" fill="none" stroke="#dfff37" stroke-dasharray="4 4" marker-end="url(#a-cit)"/>
-  <text class="m" x="842" y="500" font-size="10.5" fill="#dfff37">compare to</text>
+  <text class="small" x="668" y="382">the only place belief is created</text>
 
-  <text class="s note" x="700" y="712">Everything above this box is verified.</text>
-  <text class="s note" x="700" y="731">This box is the one thing still trusted —</text>
-  <text class="s note" x="700" y="750">and the interface says so, permanently.</text>
+  <!-- anchor / trust boundary -->
+  <rect x="642" y="470" width="238" height="94" fill="none" stroke="#c02718" stroke-dasharray="5 4"/>
+  <text class="mono" x="654" y="490" font-size="10.5" fill="#c02718" letter-spacing="0.12em">TRUST BOUNDARY</text>
+  <rect x="654" y="500" width="214" height="52" fill="#f4f5f7" stroke="#c9ccd4"/>
+  <text class="box" x="668" y="521" font-size="13">Anchored state root</text>
+  <text class="small" x="668" y="538">corroborated across endpoints</text>
+
+  <path d="M761 470 V366" fill="none" stroke="#8ea300" stroke-dasharray="4 3" marker-end="url(#ag)" stroke-width="1.5"/>
+  <text class="small" x="770" y="424" fill="#6b6f80">compared against</text>
+
+  <text class="note" x="40" y="626">Everything above the dashed box is verified. The box itself is the one thing still trusted, and the app names it permanently on screen.</text>
 
   <!-- outcomes -->
-  <path d="M926 368 L988 368" fill="none" stroke="#dfff37" marker-end="url(#a-cit)"/>
+  <line x1="854" y1="324" x2="886" y2="324" stroke="#6b6f80" marker-end="url(#ar)"/>
 
-  <rect x="992" y="300" width="208" height="70" fill="none" stroke="#dfff37"/>
-  <rect x="1008" y="318" width="12" height="12" fill="#dfff37"/>
-  <text class="m" x="1030" y="330" font-size="12" fill="#dfff37" letter-spacing="0.1em">PROVEN</text>
-  <text class="s" x="1008" y="352" font-size="12" fill="#f2f3f8">First proof that verifies wins.</text>
-  <text class="s" x="1008" y="366" font-size="12" fill="#9aa0be">One honest endpoint is enough.</text>
+  <rect x="890" y="276" width="230" height="60" fill="#ffffff" stroke="#1f7a4d" stroke-width="1.5"/>
+  <rect x="906" y="292" width="11" height="11" fill="#1f7a4d"/>
+  <text class="mono verdict" x="925" y="302" fill="#1f7a4d" letter-spacing="0.08em">PROVEN</text>
+  <text class="small" x="906" y="322" fill="#14161c">First proof that verifies wins.</text>
 
-  <rect x="992" y="392" width="208" height="70" fill="none" stroke="#ff3b21"/>
-  <path d="M1018 410 L1008 410 L1008 422 L1013 422 M1015 412 L1020 422 M1020 412 L1015 422" stroke="#ff3b21" stroke-width="1.4" fill="none"/>
-  <text class="m" x="1030" y="422" font-size="12" fill="#ff3b21" letter-spacing="0.1em">REJECTED</text>
-  <text class="s" x="1008" y="444" font-size="12" fill="#f2f3f8">Broke at node 4 of 5.</text>
-  <text class="s" x="1008" y="458" font-size="12" fill="#9aa0be">Named, not merely detected.</text>
+  <rect x="890" y="346" width="230" height="60" fill="#ffffff" stroke="#c02718" stroke-width="1.5"/>
+  <path d="M916 362 h-10 v11 h5 M913 364 l5 9 M918 364 l-5 9" stroke="#c02718" stroke-width="1.3" fill="none"/>
+  <text class="mono verdict" x="925" y="372" fill="#c02718" letter-spacing="0.08em">REJECTED</text>
+  <text class="small" x="906" y="392" fill="#14161c">Broke at node 4 of 5. Named.</text>
 
-  <rect x="992" y="484" width="208" height="56" fill="none" stroke="#201a44"/>
-  <text class="m" x="1008" y="506" font-size="12" fill="#9aa0be" letter-spacing="0.1em">ZERO HONEST</text>
-  <text class="s" x="1008" y="526" font-size="12" fill="#f2f3f8">You get nothing, not a lie.</text>
+  <rect x="890" y="416" width="230" height="60" fill="#ffffff" stroke="#c9ccd4"/>
+  <text class="mono verdict" x="906" y="440" fill="#6b6f80" letter-spacing="0.08em">NOTHING</text>
+  <text class="small" x="906" y="460" fill="#14161c">Zero honest endpoints. Fails closed.</text>
 
-  <!-- modules strip -->
-  <line x1="40" y1="740" x2="660" y2="740" stroke="#201a44"/>
-  <text class="m band" x="40" y="772">THE SAME PRINCIPLE, FOUR PLACES</text>
-  <text class="m" x="40" y="800" font-size="12" fill="#dfff37">provider</text>
-  <text class="s" x="40" y="818" font-size="11.5" fill="#9aa0be">reads you can check</text>
-  <text class="m" x="196" y="800" font-size="12" fill="#dfff37">route</text>
-  <text class="s" x="196" y="818" font-size="11.5" fill="#9aa0be">who actually includes you</text>
-  <text class="m" x="392" y="800" font-size="12" fill="#dfff37">id</text>
-  <text class="s" x="392" y="818" font-size="11.5" fill="#9aa0be">stake, not identity</text>
-  <text class="m" x="536" y="800" font-size="12" fill="#dfff37">quorum</text>
-  <text class="s" x="536" y="818" font-size="11.5" fill="#9aa0be">agree without a platform</text>
+  <text class="small" x="890" y="500" fill="#6b6f80">One honest endpoint out of any</text>
+  <text class="small" x="890" y="516" fill="#6b6f80">number is enough, because this is</text>
+  <text class="small" x="890" y="532" fill="#6b6f80">arithmetic and not a vote.</text>
+
+  <!-- ================= MODULES ================= -->
+  <text class="strap" x="40" y="664">SAME PRINCIPLE, FOUR PLACES</text>
+  <text class="mono box" x="40" y="688" font-size="13" fill="#2b1de8">provider</text>
+  <text class="small" x="128" y="688">reads you can check</text>
+  <text class="mono box" x="330" y="688" font-size="13" fill="#2b1de8">route</text>
+  <text class="small" x="392" y="688">who actually includes your transaction</text>
+  <text class="mono box" x="700" y="688" font-size="13" fill="#2b1de8">id</text>
+  <text class="small" x="732" y="688">stake instead of identity</text>
+  <text class="mono box" x="920" y="688" font-size="13" fill="#2b1de8">quorum</text>
+  <text class="small" x="1000" y="688">agree with no platform</text>
 </svg>

@@ -361,9 +361,12 @@
 
 /* ---- diagram ------------------------------------------------------------- */
 
+/* The diagram is drawn on a light ground, so it sits on the dark page as a
+   deliberate printed inset rather than an accidental white slab. */
 .diagram {
   border: var(--line);
-  background: var(--void-lift);
+  background: #f4f5f7;
+  padding: var(--gap-2);
   overflow-x: auto;
 }
 
