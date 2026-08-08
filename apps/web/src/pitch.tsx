@@ -1,9 +1,9 @@
 import { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { formatEther } from 'viem';
+import { formatEther, isAddress } from 'viem';
 import { VerifyingReader, boundaries } from '@nullius/provider';
 import { filteredShare, observeRelays } from '@nullius/route';
-import type { AccountReading, AnchorRef, RelayObservation } from '@nullius/types';
+import type { AccountReading, Address, AnchorRef, RelayObservation } from '@nullius/types';
 
 import '@fontsource-variable/anybody';
 import '@fontsource-variable/familjen-grotesk';
@@ -50,10 +50,19 @@ function LiveVerify({ onAnchor }: { onAnchor?: (a: AnchorRef | null) => void }) 
   const [reading, setReading] = useState<AccountReading | null>(null);
   const [showBroken, setShowBroken] = useState(false);
   const [failed, setFailed] = useState<string | null>(null);
-  const target = WATCHED[0]!;
+  /**
+   * The address under examination is the visitor's choice, not ours. A demo that
+   * only ever verifies addresses we picked looks like a picture of a working
+   * thing; one that verifies an address you typed is obviously a working thing.
+   */
+  const [target, setTarget] = useState<Address>(WATCHED[0]!.address);
+  const [typed, setTyped] = useState<string>(WATCHED[0]!.address);
+  const [label, setLabel] = useState<string>(WATCHED[0]!.label);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     let live = true;
+    setBusy(true);
     void (async () => {
       const a = await reader.refreshAnchor();
       if (!live) return;
@@ -61,16 +70,34 @@ function LiveVerify({ onAnchor }: { onAnchor?: (a: AnchorRef | null) => void }) 
       onAnchor?.(a);
       if (!a) {
         setFailed('No endpoint returned a block header, so there is no root to check against.');
+        setBusy(false);
         return;
       }
-      const r = await reader.readAccount(target.address);
+      const r = await reader.readAccount(target);
       if (!live) return;
       setReading(r);
+      setBusy(false);
     })();
     return () => {
       live = false;
     };
-  }, [reader, target.address]);
+  }, [reader, target]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const next = typed.trim();
+    if (!isAddress(next)) {
+      setFailed('That is not a 20-byte hex address, so there is nothing to look up.');
+      return;
+    }
+    setFailed(null);
+    setShowBroken(false);
+    setReading(null);
+    setLabel(
+      WATCHED.find((w) => w.address.toLowerCase() === next.toLowerCase())?.label ?? 'your address',
+    );
+    setTarget(next as Address);
+  };
 
   const rejected = reading?.provenance.rejected.find((r) => r.walk) ?? null;
   const showingBroken = showBroken && rejected?.walk != null;
@@ -86,11 +113,32 @@ function LiveVerify({ onAnchor }: { onAnchor?: (a: AnchorRef | null) => void }) 
         </span>
       </div>
 
+      <form className="probe" onSubmit={submit}>
+        <label className="probe__label" htmlFor="addr">
+          Verify any mainnet address
+        </label>
+        <div className="probe__row">
+          <input
+            id="addr"
+            className="probe__input mono"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            spellCheck={false}
+            autoComplete="off"
+            placeholder="0x…"
+            aria-label="Ethereum address to verify"
+          />
+          <button className="action" type="submit" disabled={busy}>
+            {busy ? 'verifying…' : 'Verify'}
+          </button>
+        </div>
+      </form>
+
       <div className={`readout readout--${reading?.trust === 'PROVEN' ? 'proven' : 'waiting'}`}>
         <span style={{ gridRow: 'span 2', alignSelf: 'center' }}>
           <Mark trust={reading?.trust ?? 'UNVERIFIABLE'} />
         </span>
-        <span className="readout__label">{target.label} · balance</span>
+        <span className="readout__label">{label} · balance</span>
         <span className="readout__verdict">{reading?.trust ?? '…'}</span>
         <span className="readout__value">
           {reading?.value ? eth(reading.value.balance) : failed ? '—' : 'verifying…'}
