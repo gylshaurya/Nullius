@@ -1,0 +1,124 @@
+{
+  "capturedAt": 1786211642225,
+  "rows": [
+    {
+      "relay": {
+        "id": "flashbots",
+        "label": "Flashbots",
+        "dataApi": "https://boost-relay.flashbots.net",
+        "posture": "filtering"
+      },
+      "windowSlots": 244,
+      "payloadsDelivered": 16,
+      "share": 0.038834951456310676,
+      "builders": 5,
+      "lastSeenSlot": "14948965",
+      "medianDelaySlots": null,
+      "error": null,
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "bloxroute-regulated",
+        "label": "bloXroute Regulated",
+        "dataApi": "https://bloxroute.regulated.blxrbdn.com",
+        "posture": "filtering"
+      },
+      "windowSlots": 0,
+      "payloadsDelivered": 0,
+      "share": 0,
+      "builders": 0,
+      "lastSeenSlot": null,
+      "medianDelaySlots": null,
+      "error": "HTTP 400",
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "bloxroute-max-profit",
+        "label": "bloXroute Max Profit",
+        "dataApi": "https://bloxroute.max-profit.blxrbdn.com",
+        "posture": "unfiltered"
+      },
+      "windowSlots": 0,
+      "payloadsDelivered": 0,
+      "share": 0,
+      "builders": 0,
+      "lastSeenSlot": null,
+      "medianDelaySlots": null,
+      "error": "HTTP 400",
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "agnostic",
+        "label": "Agnostic Gnosis",
+        "dataApi": "https://agnostic-relay.net",
+        "posture": "unfiltered"
+      },
+      "windowSlots": 244,
+      "payloadsDelivered": 10,
+      "share": 0.024271844660194174,
+      "builders": 6,
+      "lastSeenSlot": "14948944",
+      "medianDelaySlots": null,
+      "error": null,
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "ultrasound",
+        "label": "Ultra Sound",
+        "dataApi": "https://relay.ultrasound.money",
+        "posture": "unfiltered"
+      },
+      "windowSlots": 244,
+      "payloadsDelivered": 184,
+      "share": 0.44660194174757284,
+      "builders": 17,
+      "lastSeenSlot": "14948967",
+      "medianDelaySlots": null,
+      "error": null,
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "aestus",
+        "label": "Aestus",
+        "dataApi": "https://mainnet.aestus.live",
+        "posture": "unfiltered"
+      },
+      "windowSlots": 244,
+      "payloadsDelivered": 37,
+      "share": 0.08980582524271845,
+      "builders": 8,
+      "lastSeenSlot": "14948964",
+      "medianDelaySlots": null,
+      "error": null,
+      "observedAt": 1786211635278,
+      "source": "live"
+    },
+    {
+      "relay": {
+        "id": "titan",
+        "label": "Titan",
+        "dataApi": "https://titanrelay.xyz",
+        "posture": "unknown"
+      },
+      "windowSlots": 244,
+      "payloadsDelivered": 165,
+      "share": 0.40048543689320387,
+      "builders": 13,
+      "lastSeenSlot": "14948965",
+      "medianDelaySlots": null,
+      "error": null,
+      "observedAt": 1786211635278,
+      "source": "live"
+    }
+  ]
+}
